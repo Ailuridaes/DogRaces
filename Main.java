@@ -90,7 +90,7 @@ public class Main {
 		private final String stateName = "SELECTION";
 		private int selected = -1;
 		private RoundRectangle2D.Double[] boxes;
-		private final double BOX_WIDTH = 560;
+		private double BOX_WIDTH = 560;
 		private final double BOX_HEIGHT = 85;
 		
 		public SelectionState() {
@@ -127,7 +127,7 @@ public class Main {
 					}
 				} while (nameTaken); 
 				
-				// initialize boxes for drawing
+				//initialize boxes
 				double rect_y = 40 + (105 * i);
 				boxes[i] = new RoundRectangle2D.Double(40, rect_y, BOX_WIDTH, BOX_HEIGHT, 10, 10);
 			}
@@ -173,11 +173,17 @@ public class Main {
 			if (choice) {
 				selection = dogArray[selected];
 				System.out.println("Selected " + selection.getName() + "!");
-				// maybe animate by flashing selection border for several frames
+				// TODO: animate by flashing selection border for several frames
 				cash -= 10;
 				advanceState();
 			}
-			return;
+			
+			// update boxes for drawing - allows width to adjust to window size
+			BOX_WIDTH = panel.getWidth() - 80;
+			for (int i = 0; i < 4; i++) {
+				double rect_y = 40 + (105 * i);
+				boxes[i] = new RoundRectangle2D.Double(40, rect_y, BOX_WIDTH, BOX_HEIGHT, 10, 10);
+			}
 		}
 		
 		public void paint(Graphics2D g2d) {
@@ -243,7 +249,7 @@ public class Main {
 			int averagePos = getAveragePos(dogArray);
 			// get average x_pos of dogs in array to figure out optimum viewPos
 			
-			if (averagePos < (0.5 * panelWidth)) {
+			if (averagePos < (0.5 * panelWidth) || panelWidth > bgImage.getWidth()) {
 				// average in first half-panel of background
 				viewPos = 0;
 			} else if (averagePos > (bgImage.getWidth() - (panelWidth * 0.5))) {
@@ -253,7 +259,10 @@ public class Main {
 				viewPos = averagePos - (int)(0.5 * panelWidth);
 			}
 			
-			//draw bg at viewPos, dog at x_pos - viewPos
+			//fill first with bg color in case window bigger than track
+			g2d.setColor(new Color(0xCACCC9));
+			g2d.fillRect(0, 0, panel.getWidth(), panel.getHeight());
+			//draw bg at viewPos
 			g2d.drawImage(bgImage, 0, 0, panelWidth, panel.getHeight(), viewPos, 0, viewPos + panelWidth, panel.getHeight(),  null);
 			// arguments: drawImage(Image img, int dstx1, int dsty1, int dstx2, int dsty2, int srcx1, int srcy1, int srcx2, int srcy2, ImageObserver observer)
 			
