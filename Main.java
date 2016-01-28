@@ -111,16 +111,9 @@ public class Main {
 			for (int i = 0; i < 4; i++) {
 				// initialize new dogArray
 				boolean nameTaken;
-				// TODO: need escape in case all names taken/not finding >3 files?
-				// check before loop, missing resources error? Fill index with same name.
-				/*
-					Solution - Allow customization by pulling from folder by default
-					If not enough competitors found, use default sprite resource IN .jar
-					and give default names (Switch i: case 1 = Fido, Rufus, etc.)
-				*/
 				
 				do {
-						nameTaken = false;
+					nameTaken = false;
 					if(!dogNames.isEmpty()){
 						int indx = (int)(Math.random() * (dogNames.size()));
 						if (dogNames.get(indx).contains(".gif")) {
@@ -287,9 +280,10 @@ public class Main {
 
 	private class ResultsState implements GameState {
 		public final String stateName = "RESULTS";
+		private String selectionRank;
 		
 		public ResultsState() {
-			String selectionRank = Integer.toString(selection.getRanking());
+			selectionRank = Integer.toString(selection.getRanking());
 			switch(selectionRank) {
 				case "1":
 					cash += 25;
@@ -343,6 +337,21 @@ public class Main {
 			g2d.setColor(new Color(0xF5F5F5));
 			Rectangle2D cashBounds = g2d.getFontMetrics().getStringBounds('$' + Long.toString(cash), g2d);
 			g2d.drawString('$' + Long.toString(cash), panel.getWidth() - (int)cashBounds.getWidth() - 10, (int)cashBounds.getHeight() + 10); 
+			
+			// draw winner!
+			String winnerText = dogArray[0].getName() + " wins!";
+			Rectangle2D winnerTextBounds = g2d.getFontMetrics().getStringBounds(winnerText, g2d);
+			g2d.drawString(winnerText, panel.getWidth()/2 - (int)winnerTextBounds.getWidth()/2, (int)cashBounds.getHeight() + (int)winnerTextBounds.getHeight() + 20); 
+			
+			// draw placement
+			String placeText = "Your dog came in";
+			Rectangle2D placeTextBounds = g2d.getFontMetrics().getStringBounds(placeText, g2d);
+			int placeOffset = panel.getHeight()/2 + winnerSprite.getHeight()/2 + (int)winnerTextBounds.getHeight() + 20;
+			g2d.drawString(placeText, panel.getWidth()/2 - (int)placeTextBounds.getWidth()/2, placeOffset); 
+						
+			g2d.setFont(new Font("SanSerif", Font.BOLD, 64));
+			Rectangle2D selTextBounds = g2d.getFontMetrics().getStringBounds(selectionRank, g2d);
+			g2d.drawString(selectionRank, panel.getWidth()/2 - (int)selTextBounds.getWidth()/2, placeOffset + (int)selTextBounds.getHeight()); 
 		}
 	}
 	
@@ -416,9 +425,7 @@ public class Main {
 		}
 		
 	}
-			
-				
-			
+		
 }
 
 /* 
